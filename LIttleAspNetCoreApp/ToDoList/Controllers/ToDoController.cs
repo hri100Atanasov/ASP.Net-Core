@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToDoList.Models;
 using ToDoList.Services;
 
 namespace ToDoList.Controllers
 {
+    [Authorize]
     public class ToDoController : Controller
     {
         private readonly IToDoItemService _toDoItemService;
