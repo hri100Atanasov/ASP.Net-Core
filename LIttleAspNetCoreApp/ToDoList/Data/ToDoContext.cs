@@ -7,7 +7,7 @@ using ToDoList.Models;
 
 namespace ToDoList.Data
 {
-    public class ToDoContext : IdentityDbContext
+    public class ToDoContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
         public ToDoContext(DbContextOptions<ToDoContext> options)
             : base(options)

@@ -13,6 +13,7 @@ using ToDoList.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ToDoList.Services;
+using ToDoList.Models;
 
 namespace ToDoList
 {
@@ -38,9 +39,15 @@ namespace ToDoList
             services.AddDbContext<ToDoContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>()
-                .AddEntityFrameworkStores<ToDoContext>();
+
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            options.Stores.MaxLengthForKeys = 128)
+            .AddEntityFrameworkStores<ToDoContext>()
+            .AddDefaultUI()
+            .AddDefaultTokenProviders();
+
             services.AddScoped<IToDoItemService, ToDoItemService>();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

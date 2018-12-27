@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ToDoList.Data;
@@ -17,10 +16,11 @@ namespace ToDoList.Services
             _context = context;
         }
 
-        public async Task<bool> AddItemAsync(ToDoItem newItem)
+        public async Task<bool> AddItemAsync(ToDoItem newItem, ApplicationUser user)
         {
             newItem.Id = Guid.NewGuid();
             newItem.IsDone = false;
+            newItem.UserId = user.Id;
             newItem.DueAt = DateTimeOffset.Now.AddDays(7);
             _context.Items.Add(newItem);
             var saveResult = await _context.SaveChangesAsync();
@@ -28,16 +28,16 @@ namespace ToDoList.Services
             return saveResult == 1;
         }
 
-        public async Task<ToDoItem[]> GetIncompleteItemsAsync()
+        public async Task<ToDoItem[]> GetIncompleteItemsAsync(ApplicationUser user)
         {
-            return await _context.Items.Where(i=>i.IsDone==false).ToArrayAsync();
+            return await _context.Items.Where(i => i.IsDone == false && i.UserId == user.Id).ToArrayAsync();
         }
 
-        public async Task<bool> MarkDoneAsync(Guid id)
+        public async Task<bool> MarkDoneAsync(Guid id, ApplicationUser user)
         {
-            var item = await _context.Items.Where(x => x.Id == id).SingleOrDefaultAsync();
+            var item = await _context.Items.Where(x => x.Id == id && x.UserId == user.Id).SingleOrDefaultAsync();
 
-            if (item==null)
+            if (item == null)
             {
                 return false;
             }
