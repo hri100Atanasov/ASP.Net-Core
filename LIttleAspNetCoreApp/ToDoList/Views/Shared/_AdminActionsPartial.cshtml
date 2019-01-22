@@ -1,0 +1,26 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using ToDoList.Models
+
+@inject SignInManager<ApplicationUser> signInManager
+@inject UserManager<ApplicationUser> userManager
+@{
+    ViewData["Title"] = "_AdminActionsPartial";
+}
+
+@if (signInManager.IsSignedIn(User))
+{
+    var currentUser = await userManager.GetUserAsync(User);
+
+    var isAdmin = currentUser != null && await userManager.IsInRoleAsync(currentUser, Constants.AdministratorRole);
+
+    if (isAdmin)
+    {
+        <ul class="nav navbar-nav navbar-left">
+            <li>
+                <a asp-controller="ManageUsers" asp-action="Index">
+                    Manage Users
+                </a>
+            </li>
+        </ul>
+    }
+}

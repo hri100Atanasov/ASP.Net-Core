@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ToDoList.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ToDoList.Services;
+using ToDoList.Data;
 using ToDoList.Models;
+using ToDoList.Services;
 
 namespace ToDoList
 {
@@ -41,18 +36,26 @@ namespace ToDoList
                     Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
-            options.Stores.MaxLengthForKeys = 128)
+            {
+                options.Stores.MaxLengthForKeys = 128;
+                options.Password.RequiredLength = 6;
+            })
             .AddEntityFrameworkStores<ToDoContext>()
             .AddDefaultUI()
             .AddDefaultTokenProviders();
 
             services.AddScoped<IToDoItemService, ToDoItemService>();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env,
+            UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ToDoContext context)
         {
             if (env.IsDevelopment())
             {
@@ -77,6 +80,8 @@ namespace ToDoList
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            SeedData.InitializeAsync(context, roleManager, userManager).Wait();
         }
     }
 }
