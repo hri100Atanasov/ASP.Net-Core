@@ -24,7 +24,7 @@ namespace PieShop.Controllers
             var viewModel = new PiesListViewModel
             {
                 Pies = _pieRepository.Pies,
-                CurrentCategory = "Cheese Cake"
+                CurrentCategory = "Fruit pies"
             };
 
             return View(viewModel);

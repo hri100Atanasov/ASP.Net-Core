@@ -21,6 +21,14 @@ body {
     margin-bottom: 30px;
 }
 
+.container {
+    display: flex; /* or inline-flex */
+}
+
+.container {
+    flex-direction: row;
+}
+
 .carousel-control,
 .item {
     border-radius: 4px;
